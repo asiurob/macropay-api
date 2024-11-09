@@ -4,6 +4,7 @@ import { logger } from '../utils/logger.util'
 import { User } from '../models/users/user.model'
 import { compareSync } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import { authMiddleware } from '../middlewares/auth.middleware';
 
 const router: Router = Router()
 const httpResponseUtil: HttpResponseUtil = new HttpResponseUtil()
@@ -21,18 +22,18 @@ router.post('/', async( req: Request, res: Response ): Promise<any> => {
     try {
         const user = await User.findOne( { where: { email } } )
         if( !user ) {
-            return res.status(200).json(
-                httpResponseUtil.success(resource, EAction.AUTH, 'Correo electrónico y/o contraseña inválido - 01', {} )
+            return res.status(401).json(
+                httpResponseUtil.success(resource, EAction.AUTH, 'Correo electrónico y/o contraseña inválido', {} )
             )
         }
         const resolvedPass = user.dataValues.pass ?? '';
         if( !compareSync( pass, resolvedPass ) ) {
-            return res.status(200).json(
-                httpResponseUtil.success(resource, EAction.AUTH, 'Correo electrónico y/o contraseña inválido - 02', {} )
+            return res.status(401).json(
+                httpResponseUtil.success(resource, EAction.AUTH, 'Correo electrónico y/o contraseña inválido', {} )
             )
         }
         delete user.dataValues.pass;
-        const token = sign( { data: user.dataValues }, process.env.TOKEN_SECRET, { expiresIn: '5m' } )
+        const token = sign( { data: user.dataValues }, process.env.TOKEN_SECRET, { expiresIn: process.env.TOKEN_SECRET_EXPIRATION } )
         const payload = { ...user.dataValues, token };
         return res.status(200).json(
             httpResponseUtil.success(resource, EAction.AUTH, 'Autenticación correcta', payload )
@@ -50,16 +51,11 @@ router.post('/', async( req: Request, res: Response ): Promise<any> => {
 /**
  * @api {get} /auth verify token
  */
-router.get('/:token', async( req: Request, res: Response ): Promise<any> => {
-    const token = req.params.id
-    try {
-        return res.status(200).json(
-            httpResponseUtil.success(resource, EAction.READ, '', {})
-        )
-    } catch( error: any ) {
-        logger.error( `${__filename}: ${error}` )
-        return res.status(500).json(httpResponseUtil.error500(resource, EAction.READ, error))
-    }
+router.get('/', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
+    return res.status(200).json(
+        httpResponseUtil.success(resource, EAction.AUTH, 'Token válido')
+    );
+
 })
 
 export default router

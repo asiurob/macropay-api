@@ -84,7 +84,9 @@ export const User = sequelize.define<Model<User>>(
     {
         hooks: {
             afterValidate: ( user: any ) => {
-                user.pass = hashSync( user.pass, 10 );
+                if( user.pass ) {
+                    user.pass = hashSync( user.pass, 10 );
+                }
             }
         }
     }
