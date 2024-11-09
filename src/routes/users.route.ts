@@ -73,10 +73,12 @@ router.get('/:id', async( req: Request, res: Response ): Promise<any> => {
  * @api {delete} /users/id Delete one user
  */
 router.delete('/:id', async( req: Request, res: Response ): Promise<any> => {
-
+    const id = req.params.id
     try {
+        const result = await User.destroy({ where: { id } });
+        const message = result ? 'Se eliminó correctamente al usuario' : `No se fue posible eliminar al usuario ${ id }`;
         return res.status(200).json(
-            httpResponseUtil.success(resource, EAction.DELETE, '', {})
+            httpResponseUtil.success(resource, EAction.DELETE, message)
         )
     } catch( error: any ) {
         logger.error( `${__filename}: ${error}` )
