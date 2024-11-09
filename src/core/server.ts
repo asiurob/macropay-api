@@ -49,4 +49,11 @@ export class Server {
             logger.error( `${__filename}: ${error}` )
         }
     }
+
+        /**
+     * get the current instance of http Server (testing propousals)
+     */
+        public get httpServer(): http.Server {
+            return this.http
+        }
 }
