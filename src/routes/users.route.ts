@@ -53,7 +53,7 @@ router.put('/:id', async( req: Request, res: Response ): Promise<any> => {
 })
 
 /**
- * @api {get} /users/single/id Get one user 
+ * @api {get} /users/id Get one user 
  */
 router.get('/:id', async( req: Request, res: Response ): Promise<any> => {
     const id = req.params.id

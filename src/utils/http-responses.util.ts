@@ -88,7 +88,8 @@ export enum EAction {
     CREATE = 'Creación',
     READ = 'Lectura',
     UPDATE = 'Actualización',
-    DELETE = 'Borrado'
+    DELETE = 'Borrado',
+    AUTH   = 'Autenticación'
 }
 
 interface IHttpResponse {
