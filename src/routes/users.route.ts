@@ -2,7 +2,6 @@ import { Router, Request, Response } from 'express'
 import { EAction, HttpResponseUtil } from '../utils/http-responses.util'
 import { logger } from '../utils/logger.util'
 import { User } from '../models/users/user.model'
-import { hashSync } from 'bcrypt'
 
 const router: Router = Router()
 const httpResponseUtil: HttpResponseUtil = new HttpResponseUtil()
@@ -15,7 +14,7 @@ router.post('/', async( req: Request, res: Response ): Promise<any> => {
     const { email, name, last_name, pass } = req.body
 
     try {
-        const user = (await User.create({ email, name, last_name, pass: hashSync(pass, 10) })).toJSON();
+        const user = (await User.create({ email, name, last_name, pass })).toJSON();
         delete user.pass;
         return res.status(201).json(
             httpResponseUtil.create(resource, user, EAction.CREATE)
@@ -23,6 +22,8 @@ router.post('/', async( req: Request, res: Response ): Promise<any> => {
     } catch (error: any) {
         logger.error( `${__filename}: ${error}` )
         return res.status(500).json(httpResponseUtil.error500(resource, EAction.CREATE, error))
+    } finally {
+        
     }
 })
 
@@ -57,9 +58,10 @@ router.put('/:id', async( req: Request, res: Response ): Promise<any> => {
 router.get('/:id', async( req: Request, res: Response ): Promise<any> => {
     const id = req.params.id
     try {
-
+        const result = await User.findByPk( id );
+        const message = result ? EAction.READ : `No se encontró información del usuario ${ id }`;
         return res.status(200).json(
-            httpResponseUtil.success(resource, EAction.READ, '', {})
+            httpResponseUtil.success(resource, EAction.READ, message, {...result?.dataValues})
         )
     } catch( error: any ) {
         logger.error( `${__filename}: ${error}` )
