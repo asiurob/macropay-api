@@ -1,5 +1,6 @@
 import { DataTypes, Model, Sequelize } from 'sequelize'
 import { Database } from '../../core/database'
+import { hashSync } from 'bcrypt'
 
 const database = Database.instance
 const sequelize: Sequelize = database.connection
@@ -53,8 +54,12 @@ export const User = sequelize.define<Model<User>>(
                 },
                 notNull: {
                     msg: 'El password no puede estar vacío'
+                },
+                is: {
+                    args: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                    msg: 'La contraseña no tiene un formato válido'
                 }
-            }
+            },
         },
         email: {
             type: DataTypes.STRING,
@@ -69,9 +74,19 @@ export const User = sequelize.define<Model<User>>(
                 },
                 notNull: {
                     msg: 'El correo electrónico no puede estar vacío'
+                },
+                isEmail: {
+                    msg: 'El correo electrónico no tiene un formato válido'
                 }
             }
         },
+    },
+    {
+        hooks: {
+            afterValidate: ( user: any ) => {
+                user.pass = hashSync( user.pass, 10 );
+            }
+        }
     }
 )
 

@@ -8,7 +8,7 @@ export class HttpResponseUtil {
      * @param message This message is appended to the response 
      * @returns Returns a response with a status of 200 and a message 
      */
-    public success( resource: string, action: EAction, message = '', payload?: any): IHttpResponse {
+    public success( resource: string, action: EAction | string, message = '', payload?: any): IHttpResponse {
         return {
             status: 200,
             title: 'Operación exitosa',
