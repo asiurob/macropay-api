@@ -12,7 +12,8 @@ export class HttpResponseUtil {
         return {
             status: 200,
             title: 'Operación exitosa',
-            message: `${action} ${resource}. ${message}`.trim(),
+            message,
+            map: `${action} ${resource}`,
             payload,
         }
     }
@@ -28,7 +29,8 @@ export class HttpResponseUtil {
         return {
             status: 201,
             title: 'La operación se realizó correctamente',
-            message: `${action} ${resource}. ${message}`.trim(),
+            message,
+            map: `${action} ${resource}.`,
             payload
         }
         }
@@ -44,12 +46,13 @@ export class HttpResponseUtil {
      */
     public error500(resource: string, action: EAction, error?: any, aditionalInfo = ''): IHttpResponse {
         const errorSelector = error?.errors?.map( (err: any) => err?.message );
-        const message = `No se pudo completar la petición: ${action} ${resource}. ${aditionalInfo}`.trim()
+        const message = `No se pudo completar la petición: ${aditionalInfo}`.trim()
         return {
             status: 500,
             title: 'Ocurrió un error interno',
             message,
-            errorSelector
+            errorSelector,
+            map: `${action} ${resource}`
         }
     }
     
@@ -64,7 +67,8 @@ export class HttpResponseUtil {
         return {
             status: 404,
             title: 'El recurso no existe',
-            message: `No se pudo completar la petición: ${action} ${resource}. ${message}`.trim(),
+            message: `No se pudo completar la petición: ${message}`,
+            map: `${action} ${resource}`
         }
     }
 
@@ -79,9 +83,26 @@ export class HttpResponseUtil {
         return {
             status: 400,
             title: 'La información proporcionada no es válida',
-            message: `No se pudo completar la petición: ${action} ${resource}. ${message}`.trim(),
+            message: `No se pudo completar la petición: ${message}`,
+            map: ` ${action} ${resource}`
         }
     }
+
+        /**
+     * 
+     * @param resource Is the resource that is being created, updated or deleted
+     * @param action Is the action that is being performed
+     * @param message This message is appended to the response
+     * @returns  Returns a response with a status of 403 and a message
+     */
+        public error403(resource: string, action: EAction, message = ''): IHttpResponse {
+            return {
+                status: 403,
+                title: 'No tienes permiso para acceder a esta acción',
+                message: `No se pudo completar la petición: ${message}`,
+                map: `${action} ${resource}`
+            }
+        }
 }
 
 export enum EAction {
@@ -96,6 +117,7 @@ interface IHttpResponse {
     status: number
     title: string
     message: string
+    map: string,
     errorSelector?: string[]
     payload?: any
 }

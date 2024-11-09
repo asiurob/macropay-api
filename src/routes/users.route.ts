@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express'
 import { EAction, HttpResponseUtil } from '../utils/http-responses.util'
 import { logger } from '../utils/logger.util'
 import { User } from '../models/users/user.model'
+import { authMiddleware } from '../middlewares/auth.middleware'
+import { sign } from 'jsonwebtoken'
 
 const router: Router = Router()
 const httpResponseUtil: HttpResponseUtil = new HttpResponseUtil()
@@ -10,7 +12,7 @@ const resource = 'usuario'
 /**
  * @api {post} /users/ Create a new user
  */
-router.post('/', async( req: Request, res: Response ): Promise<any> => {
+router.post('/', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
     const { email, name, last_name, pass } = req.body
 
     try {
@@ -30,7 +32,7 @@ router.post('/', async( req: Request, res: Response ): Promise<any> => {
 /**
  * @api {put} /users/id Update an user 
  */
-router.put('/:id', async( req: Request, res: Response ): Promise<any> => {
+router.put('/:id', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
     const id = req.params.id
     const updateElements: any = {};
     ['email', 'name', 'last_name', 'pass'].forEach( e => {
@@ -43,8 +45,14 @@ router.put('/:id', async( req: Request, res: Response ): Promise<any> => {
     try {
         const result = await User.update( { ...updateElements }, { where: { id } } );
         const message = result[0] === 1 ? 'Se actualizó correctamente la información' : 'El usuario no fue identificado, inténtalo nuevamente';
+        if( updateElements.pass && process.env.TOKEN_SECRET) {
+            const token = sign( { data: {} }, process.env.TOKEN_SECRET, { expiresIn: '1s' } )
+            return res.status(200).json(
+                httpResponseUtil.success(resource, EAction.UPDATE, message, {token} )
+            )
+        }
         return res.status(200).json(
-            httpResponseUtil.success(resource, message )
+            httpResponseUtil.success(resource, EAction.UPDATE, message )
         )
     } catch (error: any) {
         logger.error( `${__filename}: ${error}` )
@@ -55,7 +63,7 @@ router.put('/:id', async( req: Request, res: Response ): Promise<any> => {
 /**
  * @api {get} /users/id Get one user 
  */
-router.get('/:id', async( req: Request, res: Response ): Promise<any> => {
+router.get('/:id', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
     const id = req.params.id
     try {
         const result = await User.findByPk( id );
@@ -72,7 +80,7 @@ router.get('/:id', async( req: Request, res: Response ): Promise<any> => {
 /**
  * @api {delete} /users/id Delete one user
  */
-router.delete('/:id', async( req: Request, res: Response ): Promise<any> => {
+router.delete('/:id', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
     const id = req.params.id
     try {
         const result = await User.destroy({ where: { id } });
