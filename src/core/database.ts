@@ -27,7 +27,6 @@ export class Database {
      */
     public async connect(): Promise<void> {
         try {
-            await this.sequelize.authenticate()
             console.log( `Connected to SQL SERVER database: ${ this.DB }` )
         } catch (error) {
             logger.error( `${__filename}: ${error}` )
