@@ -24,11 +24,12 @@ export class HttpResponseUtil {
      * @param message This message is appended to the response 
      * @returns Returns a response with a status of 201 and a message 
      */
-        public create( resource: string, action: EAction, message = ''): IHttpResponse {
+        public create( resource: string, payload: any, action: EAction, message = ''): IHttpResponse {
         return {
             status: 201,
             title: 'La operación se realizó correctamente',
             message: `${action} ${resource}. ${message}`.trim(),
+            payload
         }
         }
 
@@ -42,13 +43,13 @@ export class HttpResponseUtil {
      * @returns Returns a response with a status of 500 and a message
      */
     public error500(resource: string, action: EAction, error?: any, aditionalInfo = ''): IHttpResponse {
-        const errorSelector = error ? Object.keys(error.errors) : ['unknown']
+        const errorSelector = error?.errors?.map( (err: any) => err?.message );
         const message = `No se pudo completar la petición: ${action} ${resource}. ${aditionalInfo}`.trim()
         return {
             status: 500,
             title: 'Ocurrió un error interno',
             message,
-            errorSelector,
+            errorSelector
         }
     }
     
