@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { EAction, HttpResponseUtil } from '../utils/http-responses.util'
 import { logger } from '../utils/logger.util'
-import { EmailMatcher, PassMatcher } from '../utils/regex-matcher.util'
 import { User } from '../models/users/user.model'
 import { hashSync } from 'bcrypt'
 
@@ -14,18 +13,6 @@ const resource = 'usuario'
  */
 router.post('/', async( req: Request, res: Response ): Promise<any> => {
     const { email, name, last_name, pass } = req.body
-    const validEmail = EmailMatcher( email );
-    const validPass  = PassMatcher( pass );
-    if( !validEmail ) {
-        return res.status(400).json(
-            httpResponseUtil.error400(resource, EAction.CREATE, 'El correo electrónico no tiene un formato válido')
-        )
-    }
-    if( !validPass ) {
-        return res.status(400).json(
-            httpResponseUtil.error400(resource, EAction.CREATE, 'La contraseña no tiene un formato válido')
-        )
-    }  
 
     try {
         const user = (await User.create({ email, name, last_name, pass: hashSync(pass, 10) })).toJSON();
@@ -34,7 +21,6 @@ router.post('/', async( req: Request, res: Response ): Promise<any> => {
             httpResponseUtil.create(resource, user, EAction.CREATE)
         )
     } catch (error: any) {
-        console.log( error );
         logger.error( `${__filename}: ${error}` )
         return res.status(500).json(httpResponseUtil.error500(resource, EAction.CREATE, error))
     }
@@ -44,10 +30,20 @@ router.post('/', async( req: Request, res: Response ): Promise<any> => {
  * @api {put} /users/id Update an user 
  */
 router.put('/:id', async( req: Request, res: Response ): Promise<any> => {
+    const id = req.params.id
+    const updateElements: any = {};
+    ['email', 'name', 'last_name', 'pass'].forEach( e => {
+        const key = req.body[e];
+        if( key ) {
+            updateElements[e] = key;
+        }
+    });
 
     try {
+        const result = await User.update( { ...updateElements }, { where: { id } } );
+        const message = result[0] === 1 ? 'Se actualizó correctamente la información' : 'El usuario no fue identificado, inténtalo nuevamente';
         return res.status(200).json(
-            httpResponseUtil.success(resource, EAction.UPDATE)
+            httpResponseUtil.success(resource, message )
         )
     } catch (error: any) {
         logger.error( `${__filename}: ${error}` )
@@ -58,25 +54,10 @@ router.put('/:id', async( req: Request, res: Response ): Promise<any> => {
 /**
  * @api {get} /users/single/id Get one user 
  */
-router.get('/single/:id', async( req: Request, res: Response ): Promise<any> => {
+router.get('/:id', async( req: Request, res: Response ): Promise<any> => {
     const id = req.params.id
     try {
 
-        return res.status(200).json(
-            httpResponseUtil.success(resource, EAction.READ, '', {})
-        )
-    } catch( error: any ) {
-        logger.error( `${__filename}: ${error}` )
-        return res.status(500).json(httpResponseUtil.error500(resource, EAction.READ, error))
-    }
-})
-
-/**
- * @api {get} /users/list Get all users
- */
-router.get('/list', async( req: Request, res: Response ): Promise<any> => {
-
-    try {
         return res.status(200).json(
             httpResponseUtil.success(resource, EAction.READ, '', {})
         )
