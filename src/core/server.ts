@@ -2,6 +2,7 @@ import express from 'express'
 import http from 'http'
 import { logger } from '../utils/logger.util'
 import cors from 'cors';
+import helmet from 'helmet';
 /**
  * @description Class that handles the server, don't instantiate it directly, use the Server.instance
  */
@@ -31,6 +32,18 @@ export class Server {
             this.app.use( express.json({ limit: '5mb' }) )
             this.app.use( express.urlencoded({ limit: '5mb', extended: true }) )
             this.app.use(cors());
+            this.app.use( helmet({
+                contentSecurityPolicy: {
+                    directives: {
+                        defaultSrc: ["'self'"],
+                        'script-src': ["'self'"]
+                    }
+                },
+                xssFilter: true,
+                frameguard: { action: 'deny' },
+                noSniff: true,
+                xPoweredBy: true
+            }))
             this.http.listen( this.port, () => console.log( message ) )
         } catch (error) {
             logger.error( `${__filename}: ${error}` )
