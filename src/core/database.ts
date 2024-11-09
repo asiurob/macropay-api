@@ -22,16 +22,22 @@ export class Database {
         return this._instance || ( this._instance = new Database() )
     }
 
+    /**
+     * Initialize and test the database
+     */
     public async connect(): Promise<void> {
         try {
-            await this.sequelize.authenticate();
+            await this.sequelize.authenticate()
             console.log( `Connected to SQL SERVER database: ${ this.DB }` )
         } catch (error) {
             logger.error( `${__filename}: ${error}` )
         }
     }
 
+    /**
+     * get the current instance of sequelize
+     */
     public get connection(): Sequelize {
-        return this.sequelize;
+        return this.sequelize
     }
 }
