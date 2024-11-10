@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express'
-import { EAction, HttpResponseUtil } from '../utils/http-responses.util'
-import { logger } from '../utils/logger.util'
-import { User } from '../models/users/user.model'
+import { EAction, HttpResponseUtil } from '../../utils/http-responses.util'
+import { logger } from '../../utils/logger.util'
+import { User } from '../../models/users/user.model'
 import { compareSync } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
-import { authMiddleware } from '../middlewares/auth.middleware';
+import { authMiddleware } from '../../middlewares/auth.middleware';
 
 const router: Router = Router()
 const httpResponseUtil: HttpResponseUtil = new HttpResponseUtil()

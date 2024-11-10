@@ -1,5 +1,5 @@
-import { Server } from '../core/server';
-import { Database } from '../core/database';
+import { Server } from '../../core/server';
+import { Database } from '../../core/database';
 import request from 'supertest';
 import AuthRoute from './auth.route'
 
@@ -10,6 +10,7 @@ server.start()
 database.connect()
 
 server.app.use( '/auth', AuthRoute )
+const bearer = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoxNCwibmFtZSI6Ik1lbCIsImxhc3RfbmFtZSI6IkdpYiIsImVtYWlsIjoiY2NjY0BhYWIuY29tIiwiY3JlYXRlZEF0IjoiMjAyNC0xMS0wOVQwNzozMToyOC40MzJaIiwidXBkYXRlZEF0IjoiMjAyNC0xMS0wOVQxNjo1MToxNS42MjlaIn0sImlhdCI6MTczMTE5ODY2OCwiZXhwIjoxNzMxMjg1MDY4fQ.bAvgQdUmBX8Y8R_SdzKu3jsETrAbIA1VjKLBMMoeHAk';
 
 afterAll(done => {
     server.httpServer.close()
@@ -76,7 +77,7 @@ describe( 'Auth token valid', () => {
     it( 'should get 200 http code - Valid token', async () => {
         await request( server.app )
         .get('/auth')
-        .set('bearer', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoxNCwibmFtZSI6Ik1lbCIsImxhc3RfbmFtZSI6IkdpYiIsImVtYWlsIjoiY2NjY0BhYWIuY29tIiwiY3JlYXRlZEF0IjoiMjAyNC0xMS0wOVQwNzozMToyOC40MzJaIiwidXBkYXRlZEF0IjoiMjAyNC0xMS0wOVQxNjo1MToxNS42MjlaIn0sImlhdCI6MTczMTE5MDU0MywiZXhwIjoxNzMxMTk0MTQzfQ.EtDSb0ASsrRkOP9Ut-rWsDEHr7gt5td-ehLI_aJhbvk')
+        .set('bearer', bearer)
         .expect( 200 ) 
     })
 })
