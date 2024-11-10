@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express'
-import { EAction, HttpResponseUtil } from '../utils/http-responses.util'
-import { logger } from '../utils/logger.util'
-import { User } from '../models/users/user.model'
-import { authMiddleware } from '../middlewares/auth.middleware'
+import { EAction, HttpResponseUtil } from '../../utils/http-responses.util'
+import { logger } from '../../utils/logger.util'
+import { User } from '../../models/users/user.model'
+import { authMiddleware } from '../../middlewares/auth.middleware'
 import { sign } from 'jsonwebtoken'
 
 const router: Router = Router()
@@ -32,8 +32,13 @@ router.post('/', authMiddleware, async( req: Request, res: Response ): Promise<a
 /**
  * @api {put} /users/id Update an user 
  */
-router.put('/:id', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
+router.put('/:id?', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
     const id = req.params.id
+    if( !id ) {
+        return res.status(400).json(
+            httpResponseUtil.error400( resource, EAction.UPDATE, 'No se envió el identificador del usuario' )
+        );
+    }
     const updateElements: any = {};
     ['email', 'name', 'last_name', 'pass'].forEach( e => {
         const key = req.body[e];
@@ -48,11 +53,11 @@ router.put('/:id', authMiddleware, async( req: Request, res: Response ): Promise
         if( updateElements.pass && process.env.TOKEN_SECRET) {
             const token = sign( { data: {} }, process.env.TOKEN_SECRET, { expiresIn: '1s' } )
             return res.status(200).json(
-                httpResponseUtil.success(resource, EAction.UPDATE, message, {token} )
+                httpResponseUtil.success(resource, EAction.UPDATE, message, {token, updated: true} )
             )
         }
         return res.status(200).json(
-            httpResponseUtil.success(resource, EAction.UPDATE, message )
+            httpResponseUtil.success(resource, EAction.UPDATE, message, { updated: result[0] === 1 } )
         )
     } catch (error: any) {
         logger.error( `${__filename}: ${error}` )
@@ -63,8 +68,13 @@ router.put('/:id', authMiddleware, async( req: Request, res: Response ): Promise
 /**
  * @api {get} /users/id Get one user 
  */
-router.get('/:id', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
+router.get('/:id?', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
     const id = req.params.id
+    if( !id ) {
+        return res.status(400).json(
+            httpResponseUtil.error400( resource, EAction.READ, 'No se envió el identificador del usuario' )
+        );
+    }
     try {
         const result = await User.findByPk( id );
         const message = result ? EAction.READ : `No se encontró información del usuario ${ id }`;
@@ -80,13 +90,18 @@ router.get('/:id', authMiddleware, async( req: Request, res: Response ): Promise
 /**
  * @api {delete} /users/id Delete one user
  */
-router.delete('/:id', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
+router.delete('/:id?', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
     const id = req.params.id
+    if( !id ) {
+        return res.status(400).json(
+            httpResponseUtil.error400( resource, EAction.DELETE, 'No se envió el identificador del usuario' )
+        );
+    }
     try {
         const result = await User.destroy({ where: { id } });
         const message = result ? 'Se eliminó correctamente al usuario' : `No se fue posible eliminar al usuario ${ id }`;
         return res.status(200).json(
-            httpResponseUtil.success(resource, EAction.DELETE, message)
+            httpResponseUtil.success(resource, EAction.DELETE, message, { deleted: result === 1 })
         )
     } catch( error: any ) {
         logger.error( `${__filename}: ${error}` )

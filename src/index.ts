@@ -1,7 +1,7 @@
 import { Server } from './core/server'
 import { Database } from './core/database'
-import UsersRoute from './routes/users.route'
-import AuthRoute from './routes/auth.route'
+import UsersRoute from './routes/users/users.route'
+import AuthRoute from './routes/auth/auth.route'
 
 const server   = Server.instance
 const database = Database.instance
