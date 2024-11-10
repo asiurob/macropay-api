@@ -9,7 +9,7 @@ const database = Database.instance
 server.start()
 database.connect()
 
-const bearer = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoxNCwibmFtZSI6Ik1lbCIsImxhc3RfbmFtZSI6IkdpYiIsImVtYWlsIjoiY2NjY0BhYWIuY29tIiwiY3JlYXRlZEF0IjoiMjAyNC0xMS0wOVQwNzozMToyOC40MzJaIiwidXBkYXRlZEF0IjoiMjAyNC0xMS0wOVQxNjo1MToxNS42MjlaIn0sImlhdCI6MTczMTE5ODY2OCwiZXhwIjoxNzMxMjg1MDY4fQ.bAvgQdUmBX8Y8R_SdzKu3jsETrAbIA1VjKLBMMoeHAk';
+const bearer = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoyNCwibmFtZSI6IkFsYmVydG8iLCJsYXN0X25hbWUiOiJWdWxjYW4iLCJlbWFpbCI6ImFsYmVydG9AdnVsY2FuLmNvbSIsImNyZWF0ZWRBdCI6IjIwMjQtMTEtMTBUMDM6MDE6NTMuMzk5WiIsInVwZGF0ZWRBdCI6IjIwMjQtMTEtMTBUMDM6MDE6NTMuMzk5WiJ9LCJpYXQiOjE3MzEyMTAwOTEsImV4cCI6MTczMTI5NjQ5MX0.Ldh4JbQ3el6RtP7PE4qnJc_r1wUqIOxf82G0UHIXV8s';
 
 server.app.use( '/users', UsersRoute )
 
@@ -34,7 +34,7 @@ describe( 'GET specific user', () => {
 
         await request( server.app )
         .get('/users')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .expect( 400 )
 
     });
@@ -43,7 +43,7 @@ describe( 'GET specific user', () => {
 
         await request( server.app )
         .get('/users/asd')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .expect( 500 )
     });
 
@@ -51,7 +51,7 @@ describe( 'GET specific user', () => {
 
         const result = await request( server.app )
         .get('/users/15')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .expect( 200 )
 
         expect( result.body ).toEqual(
@@ -69,7 +69,7 @@ describe( 'GET specific user', () => {
 
         const result = await request( server.app )
         .get('/users/11')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .expect( 200 )
 
         expect( result.body ).toEqual(
@@ -100,7 +100,7 @@ describe( 'PUT update data from specific user', () => {
 
         await request( server.app )
         .put('/users')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .expect( 400 )
 
     });
@@ -109,7 +109,7 @@ describe( 'PUT update data from specific user', () => {
 
         const result = await request( server.app )
         .put('/users/asd')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .expect( 200 )
 
         expect( result.body ).toEqual(
@@ -129,7 +129,7 @@ describe( 'PUT update data from specific user', () => {
 
         await request( server.app )
         .put('/users/14')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .send({
             email: 'ooo@bba.com',
         })
@@ -140,7 +140,7 @@ describe( 'PUT update data from specific user', () => {
 
         const result = await request( server.app )
         .put('/users/1')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .send({
             email: 'cccc@aab.com',
         })
@@ -163,7 +163,7 @@ describe( 'PUT update data from specific user', () => {
 
         const result = await request( server.app )
         .put('/users/12')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .send({ last_name: "bur"})
         .expect( 200 )
 
@@ -184,7 +184,7 @@ describe( 'PUT update data from specific user', () => {
 
         const result = await request( server.app )
         .put('/users/12')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .send({ pass: "Password6!"})
         .expect( 200 )
 
@@ -219,7 +219,7 @@ describe( 'DELETE specific user', () => {
 
         await request( server.app )
         .delete('/users')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .expect( 400 )
 
     });
@@ -228,7 +228,7 @@ describe( 'DELETE specific user', () => {
 
         await request( server.app )
         .delete('/users/asd')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .expect( 500 )
     });
 
@@ -236,7 +236,7 @@ describe( 'DELETE specific user', () => {
 
         const result = await request( server.app )
         .delete('/users/15')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .expect( 200 )
 
         expect( result.body ).toEqual(
@@ -256,7 +256,7 @@ describe( 'DELETE specific user', () => {
 
         const result = await request( server.app )
         .delete('/users/11')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .expect( 200 )
 
         expect( result.body ).toEqual(
@@ -288,7 +288,7 @@ describe( 'POST create a new user', () => {
     it( 'should return 500 http code if email, name, last_name or password are missed', async() => {
         const result = await request( server.app )
         .post('/users')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .send({})
         .expect( 500 )
 
@@ -311,7 +311,7 @@ describe( 'POST create a new user', () => {
     it( 'should return 500 http code if email, name, last_name or password are empty', async() => {
         const result = await request( server.app )
         .post('/users')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .send({ email: '', name: '', last_name: '', pass: '' })
         .expect( 500 )
 
@@ -336,7 +336,7 @@ describe( 'POST create a new user', () => {
     it( 'should return 500 http code if email, name, last_name and password are filled but email has not proper format', async() => {
         const result = await request( server.app )
         .post('/users')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .send({ email: 'vul@vul', name: 'yuh', last_name: 'bro', pass: 'Vulcans1!' })
         .expect( 500 )
 
@@ -356,7 +356,7 @@ describe( 'POST create a new user', () => {
     it( 'should return 500 http code if email, name, last_name and password are filled but password has not proper format', async() => {
         const result = await request( server.app )
         .post('/users')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .send({ email: 'vul@vul.com', name: 'yuh', last_name: 'bro', pass: 'vulcan' })
         .expect( 500 )
 
@@ -376,7 +376,7 @@ describe( 'POST create a new user', () => {
     it( 'should return 500 if user has name, last_name, email or/and password duplicated', async() => {
         const result = await request( server.app )
         .post('/users')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .send({ email: 'vul@vul.com', name: 'yuh', last_name: 'bro', pass: 'Vulcans2!' })
         .expect( 500 )
 
@@ -396,7 +396,7 @@ describe( 'POST create a new user', () => {
     it( 'should return 201 if user has been created correctly', async() => {
         const result = await request( server.app )
         .post('/users')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .send({ email: 'sdfg@vul.com', name: 'dfgg', last_name: 'vvv', pass: 'Vulcans2!' })
         .expect( 201 )
 
