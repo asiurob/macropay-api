@@ -1,0 +1,62 @@
+openapi: 3.0.0
+info:
+  title: Macropay API Documentation
+  version: 1.0.0
+servers: 
+  -url: http://localhost:3000
+   description: Local enviroment
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+paths:
+  /auth:
+    post:
+      tags:
+        - Auth
+      summary: Login into the app
+      description: Creates a new session into the app. Remember copy token into all your requests
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                pass:
+                  type: string
+              required:
+                - email
+                - pass
+      responses:
+        200:
+          description: User has been logged
+        401:
+          description: User or/and password are wrong
+        500:
+          description: Unhandled exception has occured
+    get:
+      tags:
+        - Auth
+      summary: Verify if the token is valid
+      description: If your token is not expired or corrupted, You'll get success http code
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Token valid
+        403:
+          description: Your token is not present, is expired or corrupted
+        500:
+          description: Unhandled exception has occured

@@ -10,7 +10,7 @@ server.start()
 database.connect()
 
 server.app.use( '/auth', AuthRoute )
-const bearer = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoxNCwibmFtZSI6Ik1lbCIsImxhc3RfbmFtZSI6IkdpYiIsImVtYWlsIjoiY2NjY0BhYWIuY29tIiwiY3JlYXRlZEF0IjoiMjAyNC0xMS0wOVQwNzozMToyOC40MzJaIiwidXBkYXRlZEF0IjoiMjAyNC0xMS0wOVQxNjo1MToxNS42MjlaIn0sImlhdCI6MTczMTE5ODY2OCwiZXhwIjoxNzMxMjg1MDY4fQ.bAvgQdUmBX8Y8R_SdzKu3jsETrAbIA1VjKLBMMoeHAk';
+const bearer = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoyNCwibmFtZSI6IkFsYmVydG8iLCJsYXN0X25hbWUiOiJWdWxjYW4iLCJlbWFpbCI6ImFsYmVydG9AdnVsY2FuLmNvbSIsImNyZWF0ZWRBdCI6IjIwMjQtMTEtMTBUMDM6MDE6NTMuMzk5WiIsInVwZGF0ZWRBdCI6IjIwMjQtMTEtMTBUMDM6MDE6NTMuMzk5WiJ9LCJpYXQiOjE3MzEyMTAwOTEsImV4cCI6MTczMTI5NjQ5MX0.Ldh4JbQ3el6RtP7PE4qnJc_r1wUqIOxf82G0UHIXV8s';
 
 afterAll(done => {
     server.httpServer.close()
@@ -70,14 +70,14 @@ describe( 'Auth token valid', () => {
     it( 'should get 403 http code - Expired token', async () => {
         await request( server.app )
         .get('/auth')
-        .set('bearer', 'invalid-token')
+        .set('Authorization', 'invalid-token')
         .expect( 403 ) 
     })
 
     it( 'should get 200 http code - Valid token', async () => {
         await request( server.app )
         .get('/auth')
-        .set('bearer', bearer)
+        .set('Authorization', bearer)
         .expect( 200 ) 
     })
 })

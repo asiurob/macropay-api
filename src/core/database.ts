@@ -14,7 +14,8 @@ export class Database {
     private constructor () {
         this.sequelize = new Sequelize(this.DB, this.DB_USER, this.DB_PASS, {
             host: 'localhost',
-            dialect: 'mssql'
+            dialect: 'mssql',
+            logging: false
         });
     }
 

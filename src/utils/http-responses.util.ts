@@ -103,6 +103,22 @@ export class HttpResponseUtil {
                 map: `${action} ${resource}`
             }
         }
+
+            /**
+     * 
+     * @param resource Is the resource that is being created, updated or deleted
+     * @param action Is the action that is being performed
+     * @param message This message is appended to the response
+     * @returns  Returns a response with a status of 403 and a message
+     */
+        public error401(resource: string, action: EAction, message = ''): IHttpResponse {
+            return {
+                status: 401,
+                title: 'La petición fue denegada por credenciales incorrectas',
+                message: `No se pudo completar la petición: ${message}`,
+                map: `${action} ${resource}`
+            }
+        }
 }
 
 export enum EAction {

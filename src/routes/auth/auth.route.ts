@@ -10,9 +10,7 @@ const router: Router = Router()
 const httpResponseUtil: HttpResponseUtil = new HttpResponseUtil()
 const resource = 'Auth'
 
-/**
- * @api {post} /auth/ Login a user
- */
+
 router.post('/', async( req: Request, res: Response ): Promise<any> => {
     const { email, pass } = req.body
     if( !process.env.TOKEN_SECRET ) {
@@ -23,13 +21,13 @@ router.post('/', async( req: Request, res: Response ): Promise<any> => {
         const user = await User.findOne( { where: { email } } )
         if( !user ) {
             return res.status(401).json(
-                httpResponseUtil.success(resource, EAction.AUTH, 'Correo electrónico y/o contraseña inválido', {} )
+                httpResponseUtil.error401(resource, EAction.AUTH, 'Correo electrónico y/o contraseña inválido' )
             )
         }
         const resolvedPass = user.dataValues.pass ?? '';
         if( !compareSync( pass, resolvedPass ) ) {
             return res.status(401).json(
-                httpResponseUtil.success(resource, EAction.AUTH, 'Correo electrónico y/o contraseña inválido', {} )
+                httpResponseUtil.error401(resource, EAction.AUTH, 'Correo electrónico y/o contraseña inválido' )
             )
         }
         delete user.dataValues.pass;
