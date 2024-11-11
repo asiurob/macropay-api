@@ -12,7 +12,7 @@ const resource = 'usuario'
 /**
  * @api {post} /users/ Create a new user
  */
-router.post('/', authMiddleware, async( req: Request, res: Response ): Promise<any> => {
+router.post('/', async( req: Request, res: Response ): Promise<any> => {
     const { email, name, last_name, pass } = req.body
 
     try {

@@ -276,14 +276,14 @@ describe( 'DELETE specific user', () => {
 
 describe( 'POST create a new user', () => {
 
-    it( 'Should return 403 http code if you are not logged or with valid token', async () => {
+    /*it( 'Should return 403 http code if you are not logged or with valid token', async () => {
 
         await request( server.app )
         .post('/users')
         .set('bearer', 'invalid token')
         .expect( 403 )
 
-    });
+    });*/
 
     it( 'should return 500 http code if email, name, last_name or password are missed', async() => {
         const result = await request( server.app )
