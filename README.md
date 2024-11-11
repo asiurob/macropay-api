@@ -1,4 +1,19 @@
 
+# Macropay API
+
+
+
+
+## Software y dependencias
+
+
+- El proyecto fue construido con Node.js 22.11.0 disponible [aquí](https://nodejs.org/en/).
+
+- La base de datos es SQL Server 2022 Express disponible [aquí](https://www.microsoft.com/es-mx/sql-server/sql-server-downloads).
+
+- Se usó Docker para meterlo en contenedores, disponible [aquí](https://docs.docker.com/get-started/get-docker/)
+
+
 ## Instalación local
 
 Antes de iniciar,
@@ -7,6 +22,7 @@ Los archivos ```.env``` y ```.test.env``` fueron enviados separados, agregarlos 
 
 **El servidor usa el puerto 3000 para iniciar, asegurarse tenerlo libre o cambiarlo en el archivo ```.env```**
 
+### Intrucciones para el proyecto Node
 
 Para inicializar el proyecto de forma local, ejecutar
 
@@ -20,7 +36,7 @@ Se debe traspilar de typescript a javascript, utilizaremos el siguiente comando
   tsc -w
 ```
 
-Una vez instalado y traspilado, para inicializar el servidor ejecutaremos en una terminal nueva. 
+Una vez instalado y traspilado, para inicializar el servidor ejecutaremos en una terminal nueva. (Antes de consumir los servicios ver sección de base de datos más abajo)
 
 ```bash
   npm run dev
@@ -38,6 +54,24 @@ Para correr la suite de pruebas utilizaremos
   npm run test
 ```
 **Algunos casos en la suite de pruebas pueden fallar, es normal, esto debido a la prueba de endpoints por ejemplo de eliminar un usuario este viene "hardcodeado" y no lo encontrará en la base de datos, para corregirlo asignar el ID de un usuario que si exista.**
+
+### Instrucciones para la base de datos
+
+Una vez instalado el software de la base de datos, ejecutaremos las siguientes sentencias con el usuario root (O cualquier otro que tenga permisos necesarios)
+
+```
+CREATE DATABASE macropay;
+USE macropay;
+CREATE TABLE Users(id int IDENTITY(1,1) PRIMARY KEY, name nvarchar(200) NOT NULL UNIQUE, last_name nvarchar(200) NOT NULL UNIQUE, pass nvarchar(100) NOT NULL, email nvarchar(50) NOT NULL UNIQUE, createdAt datetime2(7), updatedAt datetime2(7))
+```
+
+En consiguiente entraremos al SSMS.
+
+Se deberá crear un usuario con el siguiente nombre **macropay-user-db**. Este deberá tener permisos de CRUD en la base de datos ```macropay``` 
+
+La contraseña que se le asigne deberá pegarse en los archivos ```.env``` del proyecto
+
+-----
 
 ## Instalación por Docker
 
@@ -75,7 +109,19 @@ docker exec -it sql1 opt/mssql-tools18/bin/sqlcmd -No -S localhost -U sa -P '<Yo
 2.
 - Ejecutar las sentencias por separado para crearlas directo en la base de datos
 ```
-docker exec -it sql1 opt/mssql-tools18/bin/sqlcmd -No -S localhost -U sa -P 'Password1!' -Q 'CREATE DATABASE macropay;'
-docker exec -it sql1 opt/mssql-tools18/bin/sqlcmd -No -S localhost -U sa -P 'Password1!' -Q 'USE macropay; CREATE TABLE Users(id int IDENTITY(1,1) PRIMARY KEY, name nvarchar(200) NOT NULL UNIQUE, last_name nvarchar(200) NOT NULL UNIQUE, pass nvarchar(100) NOT NULL, email nvarchar(50) NOT NULL UNIQUE, createdAt datetime2(7), updatedAt datetime2(7));'
-docker exec -it sql1 opt/mssql-tools18/bin/sqlcmd -No -S localhost -U sa -P 'Password1!' -Q 'USE macropay; SELECT * FROM Users';
+docker exec -it sql1 opt/mssql-tools18/bin/sqlcmd -No -S localhost -U sa -P '<Your password>' -Q 'CREATE DATABASE macropay;'
+docker exec -it sql1 opt/mssql-tools18/bin/sqlcmd -No -S localhost -U sa -P '<Your password>' -Q 'USE macropay; CREATE TABLE Users(id int IDENTITY(1,1) PRIMARY KEY, name nvarchar(200) NOT NULL UNIQUE, last_name nvarchar(200) NOT NULL UNIQUE, pass nvarchar(100) NOT NULL, email nvarchar(50) NOT NULL UNIQUE, createdAt datetime2(7), updatedAt datetime2(7));'
+docker exec -it sql1 opt/mssql-tools18/bin/sqlcmd -No -S localhost -U sa -P '<Your password>' -Q 'USE macropay; SELECT * FROM Users';
 ```
+## ¿Cómo se usa?
+La forma de uso de cada API la podemos encontrar en la siguiente ruta
+
+```
+localhost:3000/api-docs
+```
+
+### Disclaimer
+
+Con la finalidad de poder crear nuestro primer usuario, se quitó el middleware del método POST del recursos users, esto debido a que el primer usuario jamás podría crearse debido a que la contraseña está hasheada.
+
+
