@@ -1,0 +1,185 @@
+openapi: 3.0.0
+info:
+  title: Macropay API Documentation
+  version: 1.0.0
+servers: 
+  -url: http://localhost:3000
+   description: Local enviroment
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+paths:
+  /auth:
+    post:
+      tags:
+        - Auth
+      summary: Login into the app
+      description: Creates a new session into the app. Remember copy token into all your requests
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                pass:
+                  type: string
+              required:
+                - email
+                - pass
+      responses:
+        200:
+          description: User has been logged
+        401:
+          description: User or/and password are wrong
+        500:
+          description: Unhandled exception has occured
+    get:
+      tags:
+        - Auth
+      summary: Verify if the token is valid
+      description: If your token is not expired or corrupted, You'll get success http code
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Token valid
+        403:
+          description: Your token is not present, is expired or corrupted
+        500:
+          description: Unhandled exception has occured
+  /users/{id}:
+    get: 
+      tags: 
+        - Users
+      summary: Get one user
+      description: Send via param the user to retrieve
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: Numeric ID of the user to retrieve
+      responses:
+        200:
+          description: Data of the user requested
+        400:
+          description: The ID was not sent
+        403:
+          description: Your token is not present, is expired or corrupted
+        500:
+          description: Unhandled exception has occured
+    put:
+      tags: 
+        - Users
+      summary: Update an user
+      description: You can update email, password, name and/or last_name. If your response have a new token, you must to replace the current one
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: Numeric ID of the user to update
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                pass:
+                  type: string
+                user_name:
+                  type: string
+                name:
+                  type: string
+      responses:
+        200:
+          description: User has been updated. If the response has a token you should replace the used one
+        400:
+          description: The ID was not sent
+        403:
+          description: Your token is not present, is expired or corrupted
+        500:
+          description: Unhandled exception has occured or some data is duplicated
+    delete: 
+      tags: 
+        - Users
+      summary: Delete an user from database
+      description: You cannot restore this user
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: Numeric ID of the user to delete
+      responses:
+        200:
+          description: User has been deleted
+        400:
+          description: The ID was not sent
+        403:
+          description: Your token is not present, is expired or corrupted
+        500:
+          description: Unhandled exception has occured
+  /users:
+    post:
+      tags: 
+        - Users
+      summary: Create a new user
+      description: Send email, name, last name and password to create a new user
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                pass:
+                  type: string
+                name:
+                  type: string
+                last_name:
+                  type: string
+              required:
+                - email
+                - pass
+                - name
+                - last_name
+      responses:
+        201:
+          description: User has been created
+        403:
+          description: Your token is not present, is expired or corrupted
+        500:
+          description: Some parameters are missing. Also cam be an unhandled exception has occured

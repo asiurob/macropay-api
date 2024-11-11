@@ -1,0 +1,67 @@
+{
+  "name": "macropay-api",
+  "version": "1.0.0",
+  "description": "Macropay - Technical Test MW SR",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
+    "dev": "nodemon --env-file=.env dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asiurob/macropay-api.git"
+  },
+  "author": "Alberto Siurob",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/asiurob/macropay-api/issues"
+  },
+  "homepage": "https://github.com/asiurob/macropay-api#readme",
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/supertest": "^6.0.2",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.7",
+    "@types/yamljs": "^0.2.34",
+    "dotenv": "^16.4.5",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.7",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.0.8",
+    "sequelize": "^6.37.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "tedious": "^18.6.1",
+    "winston": "^3.16.0",
+    "yamljs": "^0.3.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules",
+      "<rootDir>/test/",
+      "<rootDir>/dist/"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist/"
+    ],
+    "setupFiles": [
+      "<rootDir>/dotenv-config.js"
+    ]
+  }
+}
